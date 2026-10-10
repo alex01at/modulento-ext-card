@@ -1,0 +1,5 @@
+{# Receives: is_pro. The same "made with" line every design shows for a
+   Free card - never for Pro. #}
+{% if not is_pro %}
+<p class="card-powered-by"><a href="{{ url('/register') }}">{{ trans('card.detail.powered_by', {site: site_name}) }}</a></p>
+{% endif %}

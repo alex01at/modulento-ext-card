@@ -1,0 +1,36 @@
+{# Every clickable contact method, each going through /go/{slug}/{type} so
+   the click is counted before the redirect. Receives: provider, card,
+   address, list_class (the wrapping <ul>'s class, styled per design). #}
+{% import '@card/_icons.twig' as icons %}
+<ul class="{{ list_class }}">
+    {% if provider.phone %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/phone') }}">{{ icons.icon('phone') }}<span>{{ provider.phone }}</span></a></li>
+    {% endif %}
+    {% if card.whatsapp %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/whatsapp') }}">{{ icons.icon('whatsapp') }}<span>WhatsApp</span></a></li>
+    {% endif %}
+    {% if provider.contact_email %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/email') }}">{{ icons.icon('email') }}<span>{{ provider.contact_email }}</span></a></li>
+    {% endif %}
+    {% if card.website_url %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/website') }}">{{ icons.icon('website') }}<span>{{ card.website_url|replace({'https://': '', 'http://': ''}) }}</span></a></li>
+    {% endif %}
+    {% if address %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/address') }}">{{ icons.icon('address') }}<span>{{ address }}</span></a></li>
+    {% endif %}
+    {% if card.linkedin_url %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/linkedin') }}">{{ icons.icon('linkedin') }}<span>LinkedIn</span></a></li>
+    {% endif %}
+    {% if card.instagram_url %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/instagram') }}">{{ icons.icon('instagram') }}<span>Instagram</span></a></li>
+    {% endif %}
+    {% if card.facebook_url %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/facebook') }}">{{ icons.icon('facebook') }}<span>Facebook</span></a></li>
+    {% endif %}
+    {% if card.youtube_url %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/youtube') }}">{{ icons.icon('youtube') }}<span>YouTube</span></a></li>
+    {% endif %}
+    {% if card.snapchat_url %}
+        <li><a href="{{ url('/go/' ~ provider.slug ~ '/snapchat') }}">{{ icons.icon('snapchat') }}<span>Snapchat</span></a></li>
+    {% endif %}
+</ul>

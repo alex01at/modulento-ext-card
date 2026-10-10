@@ -1,0 +1,7 @@
+{# Receives: card. Free text, exactly as typed - no structure, no parsing. #}
+{% if card.opening_hours %}
+<section class="card-hours">
+    <h2>{{ trans('card.detail.opening_hours') }}</h2>
+    <p style="white-space:pre-line;">{{ card.opening_hours }}</p>
+</section>
+{% endif %}

@@ -1,0 +1,15 @@
+{# Plain text: nothing here is HTML-escaped. Blocks: subject, body. #}
+{% block subject %}{{ trans('card.mail.booking.subject', {name: name}) }}{% endblock %}
+{% block body %}
+{{ trans('card.mail.booking.intro', {provider: provider_name}) }}
+
+{{ trans('card.booking.field.name') }}: {{ name }}
+{{ trans('card.booking.field.email') }}: {{ email }}
+{{ trans('card.booking.field.preferred_time') }}: {{ preferred_time }}
+{% if message %}
+{{ trans('card.booking.field.message') }}:
+{{ message }}
+{% endif %}
+
+{{ trans('core.mail.signature') }}
+{% endblock %}

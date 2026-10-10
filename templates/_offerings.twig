@@ -1,0 +1,15 @@
+{# Receives: offerings (list of {title, description, price}) - a plain
+   display list, never orderable. #}
+{% if offerings %}
+<section class="card-offerings">
+    {% for offering in offerings %}
+        <div class="card-offering">
+            <div class="card-offering-head">
+                <strong>{{ offering.title }}</strong>
+                {% if offering.price %}<span>{{ offering.price }}</span>{% endif %}
+            </div>
+            {% if offering.description %}<p>{{ offering.description }}</p>{% endif %}
+        </div>
+    {% endfor %}
+</section>
+{% endif %}

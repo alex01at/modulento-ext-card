@@ -1,0 +1,22 @@
+{# Receives: provider, card, can_vcard, can_booking. The QR code, vCard
+   download and booking button - only ever shown to Pro, same as the
+   original: Free gets a card that works but keeps none of these extras. #}
+{% import '@card/_icons.twig' as icons %}
+{% if is_pro %}
+<div class="card-actions">
+    <img class="card-qr" src="{{ url('/card/' ~ provider.slug ~ '/qr.svg') }}" alt="QR" width="120" height="120" loading="lazy">
+    {% if can_vcard %}
+        <a class="card-button" href="{{ url('/card/' ~ provider.slug ~ '/vcard.vcf') }}">{{ icons.icon('vcard') }}<span>{{ trans('card.detail.save_contact') }}</span></a>
+    {% endif %}
+    {% if can_booking %}
+        {% if card.booking_mode == 'request' %}
+            <a class="card-button" href="{{ url('/card/' ~ provider.slug ~ '/termin') }}">{{ icons.icon('booking') }}<span>{{ trans('card.detail.book') }}</span></a>
+        {% else %}
+            <a class="card-button" href="{{ url('/go/' ~ provider.slug ~ '/booking') }}">{{ icons.icon('booking') }}<span>{{ trans('card.detail.book') }}</span></a>
+        {% endif %}
+    {% endif %}
+</div>
+{% if can_vcard %}
+    <a class="card-fab" href="{{ url('/card/' ~ provider.slug ~ '/vcard.vcf') }}" aria-label="{{ trans('card.detail.save_contact') }}">{{ icons.icon('heart') }}</a>
+{% endif %}
+{% endif %}

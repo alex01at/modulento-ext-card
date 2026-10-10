@@ -1,0 +1,182 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.edit.title') }} – {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.edit.title') }}</h1>
+<p class="muted">{{ provider.name }}</p>
+<p>{{ trans('card.edit.intro') }} <a href="{{ url('/account/provider') }}">{{ trans('card.edit.provider_link') }}</a></p>
+<p><a href="{{ url('/card/' ~ provider.slug) }}" target="_blank" rel="noopener">{{ trans('card.edit.preview') }}</a></p>
+
+{% for error in errors %}
+    <p class="flash flash-error" role="alert">{{ error }}</p>
+{% endfor %}
+
+<section>
+    <h2>{{ trans('card.edit.section_logo') }}</h2>
+    {% if card.logo_name %}
+        <p><img src="{{ url('/media/card-logo/' ~ card.logo_name ~ '.' ~ card.logo_extension) }}" alt="" width="96" height="96" style="border-radius:.5rem"></p>
+        <form method="post" action="{{ url('/account/card/logo/delete') }}" class="inline-form">
+            {{ csrf_field() }}
+            <button type="submit" class="link-button">{{ trans('card.edit.logo_remove') }}</button>
+        </form>
+    {% endif %}
+    <form method="post" action="{{ url('/account/card/logo') }}" enctype="multipart/form-data" class="stack-form">
+        {{ csrf_field() }}
+        <label for="logo">{{ trans('card.edit.logo_upload') }}</label>
+        <input id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp">
+        <small>{{ trans('card.edit.logo_hint') }}</small>
+        <button type="submit">{{ trans('card.edit.logo_save') }}</button>
+    </form>
+</section>
+
+<form method="post" action="{{ url('/account/card') }}" class="stack-form wide">
+    {{ csrf_field() }}
+
+    <label for="company">{{ trans('card.edit.company') }}</label>
+    <input id="company" name="company" value="{{ card.company }}" maxlength="150">
+
+    <label for="category_id">{{ trans('card.edit.category') }}</label>
+    <select id="category_id" name="category_id">
+        <option value="">{{ trans('card.edit.category_none') }}</option>
+        {% for category in categories %}
+            {% set name = category.translations[locale()].name ?? (category.translations|first).name ?? '' %}
+            <option value="{{ category.id }}" {{ card.category_id == category.id ? 'selected' }}>{{ name }}</option>
+        {% endfor %}
+    </select>
+
+    <fieldset>
+        <legend>{{ trans('card.edit.section_contact') }}</legend>
+        <small>{{ trans('card.edit.contact_hint') }}</small>
+        <label for="whatsapp">{{ trans('card.edit.whatsapp') }}</label>
+        <input id="whatsapp" name="whatsapp" value="{{ card.whatsapp }}" maxlength="30" placeholder="+49 151 23456789">
+        <label for="website_url">{{ trans('card.edit.website') }}</label>
+        <input id="website_url" name="website_url" value="{{ card.website_url }}" maxlength="255" placeholder="example.com">
+    </fieldset>
+
+    <fieldset>
+        <legend>{{ trans('card.edit.section_social') }}</legend>
+        <label for="linkedin_url">LinkedIn</label>
+        <input id="linkedin_url" name="linkedin_url" value="{{ card.linkedin_url }}" maxlength="255" placeholder="https://linkedin.com/in/…">
+        <label for="instagram_url">Instagram</label>
+        <input id="instagram_url" name="instagram_url" value="{{ card.instagram_url }}" maxlength="255" placeholder="https://instagram.com/…">
+        <label for="facebook_url">Facebook</label>
+        <input id="facebook_url" name="facebook_url" value="{{ card.facebook_url }}" maxlength="255" placeholder="https://facebook.com/…">
+        <label for="youtube_url">YouTube</label>
+        <input id="youtube_url" name="youtube_url" value="{{ card.youtube_url }}" maxlength="255" placeholder="https://youtube.com/@…">
+        <label for="snapchat_url">Snapchat</label>
+        <input id="snapchat_url" name="snapchat_url" value="{{ card.snapchat_url }}" maxlength="255" placeholder="https://snapchat.com/add/…">
+    </fieldset>
+
+    <label for="opening_hours">{{ trans('card.edit.opening_hours') }}</label>
+    <textarea id="opening_hours" name="opening_hours" rows="4" placeholder="{{ trans('card.edit.opening_hours_placeholder') }}">{{ card.opening_hours }}</textarea>
+
+    <fieldset {{ features.design ? '' : 'disabled' }}>
+        <legend>{{ trans('card.edit.section_design') }}{% if not features.design %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>
+        {% for design in ['classic', 'modern', 'professional', 'playful'] %}
+            <label class="checkbox">
+                <input type="radio" name="design" value="{{ design }}" {{ card.design == design ? 'checked' }}>
+                <span>{{ trans('card.design.' ~ design) }}</span>
+            </label>
+        {% endfor %}
+    </fieldset>
+
+    <fieldset {{ features.colors ? '' : 'disabled' }}>
+        <legend>{{ trans('card.edit.section_colors') }}{% if not features.colors %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>
+        <label class="checkbox">
+            <input type="checkbox" name="use_custom_colors" value="1" {{ card.use_custom_colors ? 'checked' }}>
+            <span>{{ trans('card.edit.use_custom_colors') }}</span>
+        </label>
+        <label for="color_background">{{ trans('card.edit.color_background') }}</label>
+        <input id="color_background" name="color_background" type="color" value="{{ card.color_background ?: '#ffffff' }}">
+        <label for="color_header">{{ trans('card.edit.color_header') }}</label>
+        <input id="color_header" name="color_header" type="color" value="{{ card.color_header ?: '#1d4dd8' }}">
+        <label for="color_content">{{ trans('card.edit.color_content') }}</label>
+        <input id="color_content" name="color_content" type="color" value="{{ card.color_content ?: '#1f2430' }}">
+        <label for="color_footer">{{ trans('card.edit.color_footer') }}</label>
+        <input id="color_footer" name="color_footer" type="color" value="{{ card.color_footer ?: '#1f2430' }}">
+    </fieldset>
+
+    <fieldset {{ features.booking ? '' : 'disabled' }}>
+        <legend>{{ trans('card.edit.section_booking') }}{% if not features.booking %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>
+        <label class="checkbox">
+            <input type="radio" name="booking_mode" value="" {{ card.booking_mode is null ? 'checked' }}>
+            <span>{{ trans('card.edit.booking_none') }}</span>
+        </label>
+        <label class="checkbox">
+            <input type="radio" name="booking_mode" value="link" {{ card.booking_mode == 'link' ? 'checked' }}>
+            <span>{{ trans('card.edit.booking_link') }}</span>
+        </label>
+        <input name="booking_url" value="{{ card.booking_url }}" maxlength="255" placeholder="https://calendly.com/…">
+        <label class="checkbox">
+            <input type="radio" name="booking_mode" value="request" {{ card.booking_mode == 'request' ? 'checked' }}>
+            <span>{{ trans('card.edit.booking_request') }}</span>
+        </label>
+        <small>{{ trans('card.edit.booking_request_hint') }}</small>
+    </fieldset>
+
+    <button type="submit">{{ trans('card.edit.save') }}</button>
+</form>
+
+<section {{ features.gallery ? '' : 'aria-disabled="true"' }}>
+    <h2>{{ trans('card.edit.section_gallery') }}{% if not features.gallery %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</h2>
+    {% if gallery_images %}
+        <div class="gallery">
+            {% for image in gallery_images %}
+                <div>
+                    <img src="{{ image.thumb }}" alt="" width="120">
+                    <form method="post" action="{{ url('/account/card/gallery/' ~ image.id ~ '/delete') }}" class="inline-form">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="return" value="/account/card">
+                        <button type="submit" class="link-button">{{ trans('card.edit.gallery_remove') }}</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if features.gallery and gallery_images|length < gallery_max %}
+        <form method="post" action="{{ url('/account/card/gallery/add') }}" enctype="multipart/form-data" class="stack-form">
+            {{ csrf_field() }}
+            <input type="hidden" name="return" value="/account/card">
+            <label for="image">{{ trans('card.edit.gallery_add') }}</label>
+            <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+            <small>{{ trans('card.edit.gallery_hint', {max: gallery_max}) }}</small>
+            <button type="submit">{{ trans('card.edit.gallery_upload') }}</button>
+        </form>
+    {% endif %}
+</section>
+
+<section {{ features.offerings ? '' : 'aria-disabled="true"' }}>
+    <h2>{{ trans('card.edit.section_offerings') }}{% if not features.offerings %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</h2>
+    {% if offerings %}
+        <ul class="plain-list">
+            {% for offering in offerings %}
+                <li>
+                    <strong>{{ offering.title }}</strong>{% if offering.price %} – {{ offering.price }}{% endif %}
+                    {% if offering.description %}<br><small>{{ offering.description }}</small>{% endif %}
+                    <form method="post" action="{{ url('/account/card/offerings/' ~ offering.id ~ '/delete') }}" class="inline-form">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="return" value="/account/card">
+                        <button type="submit" class="link-button">{{ trans('card.edit.offering_remove') }}</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if features.offerings and offerings|length < offerings_max %}
+        <form method="post" action="{{ url('/account/card/offerings/add') }}" class="stack-form">
+            {{ csrf_field() }}
+            <input type="hidden" name="return" value="/account/card">
+            <label for="offering-title">{{ trans('card.edit.offering_title') }}</label>
+            <input id="offering-title" name="title" maxlength="150" required>
+            <label for="offering-price">{{ trans('card.edit.offering_price') }}</label>
+            <input id="offering-price" name="price" maxlength="50" placeholder="z. B. ab 49 €">
+            <label for="offering-description">{{ trans('card.edit.offering_description') }}</label>
+            <textarea id="offering-description" name="description" rows="2" maxlength="500"></textarea>
+            <button type="submit">{{ trans('card.edit.offering_add') }}</button>
+        </form>
+    {% endif %}
+</section>
+
+<p><a href="{{ url('/account/card/stats') }}">{{ trans('card.edit.stats_link') }}</a></p>
+{% endblock %}

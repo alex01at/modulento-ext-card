@@ -1,0 +1,8 @@
+{# Receives: gallery_images (list of {large, thumb, width, height}). #}
+{% if gallery_images %}
+<section class="card-gallery">
+    {% for image in gallery_images %}
+        <a href="{{ image.large }}" target="_blank" rel="noopener"><img src="{{ image.thumb }}" alt="" loading="lazy" width="{{ image.width }}" height="{{ image.height }}"></a>
+    {% endfor %}
+</section>
+{% endif %}

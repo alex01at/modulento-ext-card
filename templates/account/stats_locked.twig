@@ -1,0 +1,9 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.stats.title') }} – {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.stats.title') }}</h1>
+<p>{{ trans('card.feature.locked') }}</p>
+<p><a href="{{ url('/account/card') }}">{{ trans('card.edit.title') }}</a></p>
+{% endblock %}

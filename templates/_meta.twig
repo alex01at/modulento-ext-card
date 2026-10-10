@@ -1,0 +1,18 @@
+{# The <head> every design shares: title, description, Open Graph, the
+   language alternates and the Person structured data. #}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ provider.name }}{{ card.company ? ' – ' ~ card.company }} – {{ site_name }}</title>
+{% if meta_description %}<meta name="description" content="{{ meta_description }}">{% endif %}
+<meta property="og:site_name" content="{{ site_name }}">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="{{ provider.name }}">
+{% if meta_description %}<meta property="og:description" content="{{ meta_description }}">{% endif %}
+<meta property="og:url" content="{{ url('/card/' ~ provider.slug, null, true) }}">
+{% if og_image_url %}
+    <meta property="og:image" content="{{ og_image_url }}">
+    <meta name="twitter:card" content="summary">
+{% endif %}
+{% if site_favicon() %}<link rel="icon" href="{{ site_favicon() }}">{% endif %}
+<link rel="stylesheet" href="{{ ext_asset('card', 'card.css') }}">
+{% if structured_data_json %}<script type="application/ld+json">{{ structured_data_json|raw }}</script>{% endif %}

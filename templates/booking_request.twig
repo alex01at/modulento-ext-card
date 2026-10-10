@@ -1,0 +1,33 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.booking.title', {name: provider.name}) }} – {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.booking.title', {name: provider.name}) }}</h1>
+<p><a href="{{ url('/card/' ~ provider.slug) }}">{{ trans('card.booking.back', {name: provider.name}) }}</a></p>
+
+<form method="post" action="{{ url('/card/' ~ provider.slug ~ '/termin') }}" class="stack-form">
+    {{ csrf_field() }}
+    {# Honeypot: invisible to a person, a bot filling every field catches itself. #}
+    <div style="position:absolute;left:-9999px" aria-hidden="true">
+        <label for="booking-website">Website</label>
+        <input id="booking-website" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+    <input type="hidden" name="js_ok" value="0">
+    <script>document.currentScript.previousElementSibling.value = '1';</script>
+
+    <label for="booking-name">{{ trans('card.booking.field.name') }}</label>
+    <input id="booking-name" name="name" required>
+
+    <label for="booking-email">{{ trans('card.booking.field.email') }}</label>
+    <input id="booking-email" name="email" type="email" required>
+
+    <label for="booking-time">{{ trans('card.booking.field.preferred_time') }}</label>
+    <input id="booking-time" name="preferred_time" required placeholder="{{ trans('card.booking.field.preferred_time_placeholder') }}">
+
+    <label for="booking-message">{{ trans('card.booking.field.message') }}</label>
+    <textarea id="booking-message" name="message" rows="4"></textarea>
+
+    <button type="submit">{{ trans('card.booking.submit') }}</button>
+</form>
+{% endblock %}

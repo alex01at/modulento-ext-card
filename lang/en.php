@@ -1,0 +1,162 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    // Subscription feature labels (Administration → Subscriptions, plans)
+    'card.subscription.design' => 'Card: design templates & brand colour',
+    'card.subscription.colors' => 'Card: custom colours',
+    'card.subscription.gallery' => 'Card: photo gallery',
+    'card.subscription.offerings' => 'Card: offerings list',
+    'card.subscription.booking' => 'Card: booking button',
+    'card.subscription.vcard' => 'Card: vCard download',
+    'card.subscription.stats' => 'Card: statistics',
+
+    // Navigation
+    'card.nav.my_card' => 'My card',
+    'card.error.needs_provider' => 'Create a provider profile first - the card builds on it.',
+    'card.feature.locked' => "That is not included in your current plan.",
+
+    // Editor
+    'card.edit.saved' => 'Saved.',
+    'card.edit.error.url' => 'One of the links is not a valid address.',
+    'card.edit.error.color' => 'One of the colours is not valid.',
+
+    // Logo
+    'card.logo.uploaded' => 'Logo uploaded.',
+    'card.logo.removed' => 'Logo removed.',
+    'card.logo.error.unavailable' => 'Image processing is not available on this server.',
+    'card.logo.error.upload' => 'The logo could not be uploaded.',
+    'card.logo.error.too_large' => 'The logo is too large (8 MB at most).',
+    'card.logo.error.type' => 'This file type is not supported.',
+    'card.logo.error.dimensions' => 'The picture is too large or too small.',
+    'card.logo.error.storage' => 'The logo could not be stored.',
+
+    // Gallery
+    'card.gallery.added' => 'Picture added.',
+    'card.gallery.removed' => 'Picture removed.',
+    'card.gallery.error.unavailable' => 'Image processing is not available on this server.',
+    'card.gallery.error.upload' => 'The picture could not be uploaded.',
+    'card.gallery.error.too_large' => 'The picture is too large (8 MB at most).',
+    'card.gallery.error.too_many' => "You've reached the maximum number of pictures.",
+    'card.gallery.error.type' => 'This file type is not supported.',
+    'card.gallery.error.dimensions' => 'The picture is too large or too small.',
+    'card.gallery.error.storage' => 'The picture could not be stored.',
+
+    // Offerings
+    'card.offering.added' => 'Entry added.',
+    'card.offering.removed' => 'Entry removed.',
+    'card.offering.error.title' => 'Give it a title (150 characters at most).',
+    'card.offering.error.description' => 'The description is too long (500 characters at most).',
+    'card.offering.error.price' => 'The price is too long (50 characters at most).',
+    'card.offering.error.too_many' => "You've reached the maximum number of entries.",
+
+    // Booking request form
+    'card.booking.sent' => 'Your request was sent.',
+    'card.booking.error.name' => 'Enter your name.',
+    'card.booking.error.email' => 'Enter a valid e-mail address.',
+    'card.booking.error.preferred_time' => 'Let them know when works for you.',
+    'card.booking.title' => 'Request an appointment with {name}',
+    'card.booking.back' => "Back to {name}'s card",
+    'card.booking.submit' => 'Send request',
+    'card.booking.field.name' => 'Name',
+    'card.booking.field.email' => 'E-mail',
+    'card.booking.field.preferred_time' => 'Preferred time',
+    'card.booking.field.preferred_time_placeholder' => 'e.g. Tuesday afternoon',
+    'card.booking.field.message' => 'Message',
+
+    // Booking e-mail to the card owner
+    'card.mail.booking.subject' => 'Appointment request from {name}',
+    'card.mail.booking.intro' => 'Your business card received an appointment request for {provider}:',
+
+    // Public card page
+    'card.detail.save_contact' => 'Save contact',
+    'card.detail.book' => 'Request an appointment',
+    'card.detail.opening_hours' => 'Opening hours',
+    'card.detail.powered_by' => 'Made with {site}',
+    'card.teaser.view' => 'View full business card',
+
+    // Design names
+    'card.design.classic' => 'Classic',
+    'card.design.modern' => 'Modern',
+    'card.design.professional' => 'Professional',
+    'card.design.playful' => 'Playful',
+
+    // Contact/click type labels (also used for the statistics table)
+    'card.contact.phone' => 'Phone',
+    'card.contact.email' => 'E-mail',
+    'card.contact.website' => 'Website',
+    'card.contact.address' => 'Address',
+    'card.contact.linkedin' => 'LinkedIn',
+    'card.contact.instagram' => 'Instagram',
+    'card.contact.facebook' => 'Facebook',
+    'card.contact.youtube' => 'YouTube',
+    'card.contact.booking' => 'Booking',
+    'card.contact.whatsapp' => 'WhatsApp',
+    'card.contact.snapchat' => 'Snapchat',
+
+    // Weekdays (ISO: 1 Monday .. 7 Sunday)
+    'card.weekday.1' => 'Monday',
+    'card.weekday.2' => 'Tuesday',
+    'card.weekday.3' => 'Wednesday',
+    'card.weekday.4' => 'Thursday',
+    'card.weekday.5' => 'Friday',
+    'card.weekday.6' => 'Saturday',
+    'card.weekday.7' => 'Sunday',
+
+    // Editor page
+    'card.edit.title' => 'My business card',
+    'card.edit.intro' => 'Name, address and contact details come from your provider profile.',
+    'card.edit.provider_link' => 'Edit provider profile',
+    'card.edit.preview' => 'View card',
+    'card.edit.save' => 'Save',
+    'card.edit.pro_only' => 'Pro only',
+    'card.edit.company' => 'Company / employer',
+    'card.edit.category' => 'Category',
+    'card.edit.category_none' => 'None',
+    'card.edit.section_contact' => 'Contact',
+    'card.edit.contact_hint' => 'Phone, e-mail and address come from your provider profile.',
+    'card.edit.whatsapp' => 'WhatsApp number',
+    'card.edit.website' => 'Website',
+    'card.edit.section_social' => 'Social networks',
+    'card.edit.opening_hours' => 'Opening hours',
+    'card.edit.opening_hours_placeholder' => 'e.g. Mon-Fri 9am-5pm',
+    'card.edit.section_design' => 'Design',
+    'card.edit.section_colors' => 'Custom colours',
+    'card.edit.use_custom_colors' => 'Use custom colours',
+    'card.edit.color_background' => 'Background',
+    'card.edit.color_header' => 'Header',
+    'card.edit.color_content' => 'Accent colour',
+    'card.edit.color_footer' => 'Footer',
+    'card.edit.section_booking' => 'Booking',
+    'card.edit.booking_none' => 'No booking button',
+    'card.edit.booking_link' => 'External link (e.g. Calendly)',
+    'card.edit.booking_request' => 'Request form on the card',
+    'card.edit.booking_request_hint' => 'Visitors send you a request by e-mail - no scheduling system of its own.',
+    'card.edit.section_logo' => 'Logo',
+    'card.edit.logo_upload' => 'Choose logo',
+    'card.edit.logo_hint' => 'JPG, PNG or WebP, 8 MB at most.',
+    'card.edit.logo_save' => 'Upload',
+    'card.edit.logo_remove' => 'Remove logo',
+    'card.edit.section_gallery' => 'Photo gallery',
+    'card.edit.gallery_add' => 'Choose picture',
+    'card.edit.gallery_hint' => 'Up to {max} pictures, 8 MB at most each.',
+    'card.edit.gallery_upload' => 'Upload',
+    'card.edit.gallery_remove' => 'Remove',
+    'card.edit.section_offerings' => 'Offerings',
+    'card.edit.offering_title' => 'Title',
+    'card.edit.offering_price' => 'Price (free text)',
+    'card.edit.offering_description' => 'Description',
+    'card.edit.offering_add' => 'Add',
+    'card.edit.offering_remove' => 'Remove',
+    'card.edit.stats_link' => 'View statistics',
+
+    // Stats page
+    'card.stats.title' => 'Statistics',
+    'card.stats.views' => 'Total views',
+    'card.stats.since_yesterday' => 'Views since yesterday',
+    'card.stats.busiest_day' => 'Busiest weekday',
+    'card.stats.trend' => 'Views over the last 30 days',
+    'card.stats.clicks' => 'Clicks',
+    'card.stats.link_type' => 'Contact type',
+];

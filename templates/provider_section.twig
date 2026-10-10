@@ -1,0 +1,5 @@
+{# A small teaser on the standard marketplace profile page (provider/show.twig),
+   linking to the full card at /card/{slug}. Receives: provider. #}
+<section class="card-teaser">
+    <a href="{{ url('/card/' ~ provider.slug) }}">{{ trans('card.teaser.view') }} →</a>
+</section>

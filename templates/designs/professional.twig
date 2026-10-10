@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ locale() }}">
+<head>
+    {% include '@card/_meta.twig' %}
+</head>
+<body class="card-page design-professional" data-design="professional">
+<main class="card-sheet">
+    <div class="card-accent-bar"></div>
+    <div class="card-head">
+        {% if card.logo_name and avatar_url %}
+            <img class="card-logo-small" src="{{ avatar_url }}" alt="">
+        {% endif %}
+        {% if avatar_url %}
+            <img class="card-avatar" src="{{ avatar_url }}" alt="">
+        {% else %}
+            <span class="card-avatar card-avatar-empty">{{ provider.name|first|upper }}</span>
+        {% endif %}
+        <div class="card-head-text">
+            <h1>{{ provider.name }}</h1>
+            {% if headline %}<p class="card-headline">{{ headline }}</p>{% endif %}
+            {% if card.company %}<p class="card-company">{{ card.company }}</p>{% endif %}
+            {% if category_name %}<span class="card-category">{{ category_name }}</span>{% endif %}
+        </div>
+    </div>
+
+    {% if description %}<p class="card-bio">{{ description|nl2br }}</p>{% endif %}
+
+    {% include '@card/_contact_links.twig' with {list_class: 'card-contact-rows'} %}
+
+    {% include '@card/_actions.twig' %}
+    {% include '@card/_gallery.twig' %}
+    {% include '@card/_offerings.twig' %}
+    {% include '@card/_opening_hours.twig' %}
+    {% include '@card/_footer.twig' %}
+</main>
+</body>
+</html>

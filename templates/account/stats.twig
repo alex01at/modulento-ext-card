@@ -1,0 +1,50 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.stats.title') }} – {{ site_name }}{% endblock %}
+
+{% block head %}
+    {# No theme ships a bar-chart widget - a few page-scoped rules are simpler than inventing a new shared class. #}
+    <style>
+        .card-trend { display: flex; align-items: flex-end; gap: 2px; height: 6rem; margin: 1rem 0 2rem; }
+        .card-trend span { flex: 1 1 0; background: var(--accent, #1d4dd8); border-radius: 2px 2px 0 0; min-height: 3%; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.stats.title') }}</h1>
+<p><a href="{{ url('/account/card') }}">{{ trans('card.edit.title') }}</a></p>
+
+<ul class="dashboard-tiles">
+    <li>
+        <strong>{{ card.view_count }}</strong>
+        <span>{{ trans('card.stats.views') }}</span>
+    </li>
+    <li>
+        <strong>{{ views_since_yesterday }}</strong>
+        <span>{{ trans('card.stats.since_yesterday') }}</span>
+    </li>
+    {% if busiest_weekday %}
+        <li>
+            <strong>{{ trans('card.weekday.' ~ busiest_weekday) }}</strong>
+            <span>{{ trans('card.stats.busiest_day') }}</span>
+        </li>
+    {% endif %}
+</ul>
+
+<h2>{{ trans('card.stats.trend') }}</h2>
+<div class="card-trend">
+    {% for day in trend %}
+        <span style="height:{{ day.percent }}%" title="{{ day.date }}: {{ day.count }}"></span>
+    {% endfor %}
+</div>
+
+<h2>{{ trans('card.stats.clicks') }}</h2>
+<table>
+    <thead><tr><th>{{ trans('card.stats.link_type') }}</th><th>{{ trans('card.stats.clicks') }}</th></tr></thead>
+    <tbody>
+        {% for type, column in click_columns %}
+            <tr><td>{{ trans('card.contact.' ~ type) }}</td><td>{{ card[column] }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
