@@ -31,7 +31,7 @@ final class CardController extends Controller
         }
 
         $cards = new Cards($app->db);
-        $card = $cards->findOrDefault((int) $provider['id']);
+        $card = $this->brandedCard((int) $provider['id'], $cards->findOrDefault((int) $provider['id']));
         $cards->incrementView((int) $provider['id']);
         (new CardEvents($app->db))->record((int) $provider['id'], CardEvents::TYPE_VIEW);
 
@@ -122,9 +122,9 @@ final class CardController extends Controller
     {
         $app = $this->app;
         $provider = $app->providers->findPublicBySlug($params['slug']);
-        $card = $provider !== null ? (new Cards($app->db))->findOrDefault((int) $provider['id']) : null;
+        $card = $provider !== null ? $this->brandedCard((int) $provider['id'], (new Cards($app->db))->findOrDefault((int) $provider['id'])) : null;
 
-        if ($provider === null || $card === null || !$app->subscriptions->allows((int) $provider['account_id'], 'card.feature.vcard')) {
+        if ($provider === null || $card === null || !(new Organizations($app->db, $app))->effectiveAllows((int) $provider['account_id'], (int) $provider['id'], 'card.feature.vcard')) {
             http_response_code(404);
             header('Content-Type: text/plain; charset=utf-8');
             echo '404';
@@ -208,7 +208,11 @@ final class CardController extends Controller
     private function cardView(array $provider, array $card, string $locale): array
     {
         $app = $this->app;
-        $isPro = $app->subscriptions->allows((int) $provider['account_id'], 'card.feature.design');
+        $organizations = new Organizations($app->db, $app);
+        $accountId = (int) $provider['account_id'];
+        $providerId = (int) $provider['id'];
+        $allows = fn (string $feature) => $organizations->effectiveAllows($accountId, $providerId, $feature);
+        $isPro = $allows('card.feature.design');
         $text = Providers::text($provider, $locale, $app->locales->default()) ?? ['headline' => '', 'description' => ''];
 
         $categoryName = null;
@@ -217,15 +221,21 @@ final class CardController extends Controller
             $categoryName = $category !== null ? ($category['translations'][$locale]['name'] ?? $category['translations'][$app->locales->default()]['name'] ?? null) : null;
         }
 
-        $gallery = ($isPro && $app->subscriptions->allows((int) $provider['account_id'], 'card.feature.gallery'))
-            ? array_map(fn (array $i) => Gallery::urls($i), (new Gallery($app->db, $this->galleryDir()))->ofProvider((int) $provider['id']))
+        $gallery = ($isPro && $allows('card.feature.gallery'))
+            ? array_map(fn (array $i) => Gallery::urls($i), (new Gallery($app->db, $this->galleryDir()))->ofProvider($providerId))
             : [];
-        $offerings = ($isPro && $app->subscriptions->allows((int) $provider['account_id'], 'card.feature.offerings'))
-            ? (new Offerings($app->db))->ofProvider((int) $provider['id'])
+        $offerings = ($isPro && $allows('card.feature.offerings'))
+            ? (new Offerings($app->db))->ofProvider($providerId)
             : [];
 
         $avatarUrl = $this->avatarUrl($app, $provider, $card);
-        $address = Cards::formatAddress($provider, fn (string $code) => $this->trans('core.country.' . $code));
+        $address = $this->addressWithOrgFallback($provider);
+        // A member's own optional "where I work" line, set at /account/card -
+        // shown first, ahead of the (usually the organisation's own) address.
+        $membership = $organizations->memberOf($providerId);
+        if ($membership !== null && $membership['workplace'] !== null && $membership['workplace'] !== '') {
+            $address = $address !== null ? $membership['workplace'] . ' – ' . $address : $membership['workplace'];
+        }
 
         return [
             'provider' => $provider,
@@ -233,8 +243,8 @@ final class CardController extends Controller
             'headline' => $text['headline'],
             'description' => $text['description'],
             'is_pro' => $isPro,
-            'can_vcard' => $isPro && $app->subscriptions->allows((int) $provider['account_id'], 'card.feature.vcard'),
-            'can_booking' => $isPro && $app->subscriptions->allows((int) $provider['account_id'], 'card.feature.booking') && $card['booking_mode'] !== null,
+            'can_vcard' => $isPro && $allows('card.feature.vcard'),
+            'can_booking' => $isPro && $allows('card.feature.booking') && $card['booking_mode'] !== null,
             'avatar_url' => $avatarUrl,
             'category_name' => $categoryName,
             'address' => $address,
@@ -268,6 +278,49 @@ final class CardController extends Controller
         ], fn ($value) => $value !== null);
 
         return (string) json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    /** The organisation's branding laid over the card, if this provider is a member of one - never written back, resolved fresh on every call. */
+    private function brandedCard(int $providerId, array $card): array
+    {
+        $organizations = new Organizations($this->app->db, $this->app);
+        $membership = $organizations->forProvider($providerId);
+
+        return $organizations->applyBranding($card, $membership['organization'] ?? null);
+    }
+
+    /**
+     * The provider whose address fields should actually be read: the given
+     * one, or - without any address of its own, the normal case for an
+     * invited employee (see Organizations::invite()) - the organisation
+     * owner's. The organisation itself keeps no address of its own; the
+     * owner's is the real one.
+     */
+    private function addressSource(array $provider): array
+    {
+        // Checked on street/postal/city alone, not via formatAddress() - an
+        // invited member's auto-created provider (see Organizations::invite())
+        // has a country ("DE") but nothing else, and a country code alone
+        // would already make formatAddress() non-null.
+        $hasOwnAddress = trim((string) ($provider['street'] ?? '')) !== ''
+            || trim((string) ($provider['postal_code'] ?? '')) !== ''
+            || trim((string) ($provider['city'] ?? '')) !== '';
+        if ($hasOwnAddress) {
+            return $provider;
+        }
+
+        $membership = (new Organizations($this->app->db, $this->app))->forProvider((int) $provider['id']);
+        $organization = $membership['organization'] ?? null;
+        if ($organization === null) {
+            return $provider;
+        }
+
+        return $this->app->providers->find((int) $organization['owner_provider_id']) ?? $provider;
+    }
+
+    private function addressWithOrgFallback(array $provider): ?string
+    {
+        return Cards::formatAddress($this->addressSource($provider), fn (string $code) => $this->trans('core.country.' . $code));
     }
 
     private function avatarUrl(App $app, array $provider, array $card): ?string
@@ -307,7 +360,7 @@ final class CardController extends Controller
             'whatsapp' => $card['whatsapp'] !== null && $card['whatsapp'] !== '' ? 'https://wa.me/' . preg_replace('/\D/', '', $card['whatsapp']) : null,
             'email' => $provider['contact_email'] !== null && $provider['contact_email'] !== '' ? 'mailto:' . $provider['contact_email'] : null,
             'website' => $card['website_url'],
-            'address' => ($addr = Cards::formatAddress($provider, fn (string $code) => $this->trans('core.country.' . $code))) !== null
+            'address' => ($addr = $this->addressWithOrgFallback($provider)) !== null
                 ? 'https://www.google.com/maps/search/?api=1&query=' . urlencode($addr)
                 : null,
             'linkedin' => $card['linkedin_url'],
@@ -315,7 +368,7 @@ final class CardController extends Controller
             'facebook' => $card['facebook_url'],
             'youtube' => $card['youtube_url'],
             'snapchat' => $card['snapchat_url'],
-            'booking' => $app->subscriptions->allows((int) $provider['account_id'], 'card.feature.booking') ? $card['booking_url'] : null,
+            'booking' => (new Organizations($app->db, $app))->effectiveAllows((int) $provider['account_id'], (int) $provider['id'], 'card.feature.booking') ? $card['booking_url'] : null,
             default => null,
         };
     }
@@ -340,12 +393,13 @@ final class CardController extends Controller
         if (($provider['contact_email'] ?? null) !== null) {
             $lines[] = 'EMAIL;TYPE=INTERNET:' . $this->escapeVCardValue($provider['contact_email']);
         }
-        $address = Cards::formatAddress($provider, fn (string $code) => $this->trans('core.country.' . $code));
+        $addressSource = $this->addressSource($provider);
+        $address = Cards::formatAddress($addressSource, fn (string $code) => $this->trans('core.country.' . $code));
         if ($address !== null) {
-            $lines[] = 'ADR;TYPE=WORK:;;' . $this->escapeVCardValue($provider['street'] ?? '') . ';'
-                . $this->escapeVCardValue($provider['city'] ?? '') . ';;'
-                . $this->escapeVCardValue($provider['postal_code'] ?? '') . ';'
-                . $this->escapeVCardValue($this->trans('core.country.' . ($provider['country'] ?? '')));
+            $lines[] = 'ADR;TYPE=WORK:;;' . $this->escapeVCardValue($addressSource['street'] ?? '') . ';'
+                . $this->escapeVCardValue($addressSource['city'] ?? '') . ';;'
+                . $this->escapeVCardValue($addressSource['postal_code'] ?? '') . ';'
+                . $this->escapeVCardValue($this->trans('core.country.' . ($addressSource['country'] ?? '')));
         }
         if (($text['description'] ?? '') !== '') {
             $lines[] = 'NOTE:' . $this->escapeVCardValue($text['description']);
@@ -373,7 +427,7 @@ final class CardController extends Controller
         }
 
         $card = (new Cards($this->app->db))->findOrDefault((int) $provider['id']);
-        $allowed = $this->app->subscriptions->allows((int) $provider['account_id'], 'card.feature.booking');
+        $allowed = (new Organizations($this->app->db, $this->app))->effectiveAllows((int) $provider['account_id'], (int) $provider['id'], 'card.feature.booking');
 
         return $allowed && $card['booking_mode'] === 'request' ? $provider : null;
     }

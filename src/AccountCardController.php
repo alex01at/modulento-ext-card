@@ -21,7 +21,7 @@ final class AccountCardController extends Controller
             return;
         }
 
-        $this->renderForm($provider, (new Cards($this->app->db))->findOrDefault((int) $provider['id']), []);
+        $this->renderForm($provider, (new Cards($this->app->db))->findOrDefault((int) $provider['id']), [], $this->organizations()->forProvider((int) $provider['id']));
     }
 
     public function save(array $params): void
@@ -31,27 +31,40 @@ final class AccountCardController extends Controller
             return;
         }
 
+        $membership = $this->organizations()->forProvider((int) $provider['id']);
+        $isMember = $membership !== null && $membership['role'] === 'employee';
+
         $cards = new Cards($this->app->db);
         $result = $cards->validate($_POST);
 
-        if (!$this->features((int) $provider['account_id'])['design']) {
+        // An organisation's branding is edited at /account/team by its
+        // owner, never here - whatever a member's own form posted for
+        // these fields is silently dropped, the same pattern as the
+        // Free/Pro gate just below.
+        if (!$this->features((int) $provider['account_id'], (int) $provider['id'])['design'] || $isMember) {
             $result['values']['design'] = 'classic';
         }
-        if (!$this->features((int) $provider['account_id'])['colors']) {
+        if (!$this->features((int) $provider['account_id'], (int) $provider['id'])['colors'] || $isMember) {
             $result['values']['use_custom_colors'] = false;
         }
-        if (!$this->features((int) $provider['account_id'])['booking']) {
+        if ($isMember) {
+            $result['values']['company'] = null;
+        }
+        if (!$this->features((int) $provider['account_id'], (int) $provider['id'])['booking']) {
             $result['values']['booking_mode'] = null;
             $result['values']['booking_url'] = null;
         }
 
         if ($result['errors'] !== []) {
             $typed = $result['values'] + (new Cards($this->app->db))->findOrDefault((int) $provider['id']);
-            $this->renderForm($provider, $typed, array_map(fn (string $k) => $this->trans($k), $result['errors']));
+            $this->renderForm($provider, $typed, array_map(fn (string $k) => $this->trans($k), $result['errors']), $membership);
             return;
         }
 
         $cards->save((int) $provider['id'], $result['values']);
+        if ($isMember) {
+            $this->organizations()->setWorkplace((int) $provider['id'], mb_substr(trim((string) ($_POST['workplace'] ?? '')), 0, 150) ?: null);
+        }
         Session::flash('success', $this->trans('card.edit.saved'));
         $this->redirect('/account/card');
     }
@@ -60,6 +73,11 @@ final class AccountCardController extends Controller
     {
         $provider = $this->provider();
         if ($provider === null) {
+            return;
+        }
+        if ($this->isOrgMember((int) $provider['id'])) {
+            Session::flash('error', $this->trans('card.team.error.member_locked'));
+            $this->redirect('/account/card');
             return;
         }
 
@@ -74,6 +92,11 @@ final class AccountCardController extends Controller
         if ($provider === null) {
             return;
         }
+        if ($this->isOrgMember((int) $provider['id'])) {
+            Session::flash('error', $this->trans('card.team.error.member_locked'));
+            $this->redirect('/account/card');
+            return;
+        }
 
         (new Cards($this->app->db))->removeLogo((int) $provider['id'], $this->uploadDir());
         Session::flash('success', $this->trans('card.logo.removed'));
@@ -86,7 +109,7 @@ final class AccountCardController extends Controller
         if ($provider === null) {
             return;
         }
-        if (!$this->features((int) $provider['account_id'])['gallery']) {
+        if (!$this->features((int) $provider['account_id'], (int) $provider['id'])['gallery']) {
             Session::flash('error', $this->trans('card.feature.locked'));
             $this->redirect('/account/card');
             return;
@@ -116,7 +139,7 @@ final class AccountCardController extends Controller
         if ($provider === null) {
             return;
         }
-        if (!$this->features((int) $provider['account_id'])['offerings']) {
+        if (!$this->features((int) $provider['account_id'], (int) $provider['id'])['offerings']) {
             Session::flash('error', $this->trans('card.feature.locked'));
             $this->redirect('/account/card');
             return;
@@ -150,7 +173,7 @@ final class AccountCardController extends Controller
         if ($provider === null) {
             return;
         }
-        if (!$this->features((int) $provider['account_id'])['stats']) {
+        if (!$this->features((int) $provider['account_id'], (int) $provider['id'])['stats']) {
             $this->render('@card/account/stats_locked.twig', []);
             return;
         }
@@ -186,41 +209,59 @@ final class AccountCardController extends Controller
      * happened to be checked first, forever, for every other account that
      * worker later serves.
      *
+     * Resolved through Organizations::effectiveAllows(), not the
+     * subscription directly - a Firma seat inherits every one of these
+     * from the organisation owner's plan, same as the public card does.
+     *
      * @return array<string, bool>
      */
-    private function features(int $accountId): array
+    private function features(int $accountId, int $providerId): array
     {
         if (isset($this->featuresCache[$accountId])) {
             return $this->featuresCache[$accountId];
         }
 
-        $subscriptions = $this->app->subscriptions;
+        $organizations = $this->organizations();
+        $allows = fn (string $feature) => $organizations->effectiveAllows($accountId, $providerId, $feature);
 
         return $this->featuresCache[$accountId] = [
-            'design' => $subscriptions->allows($accountId, 'card.feature.design'),
-            'colors' => $subscriptions->allows($accountId, 'card.feature.colors'),
-            'gallery' => $subscriptions->allows($accountId, 'card.feature.gallery'),
-            'offerings' => $subscriptions->allows($accountId, 'card.feature.offerings'),
-            'booking' => $subscriptions->allows($accountId, 'card.feature.booking'),
-            'vcard' => $subscriptions->allows($accountId, 'card.feature.vcard'),
-            'stats' => $subscriptions->allows($accountId, 'card.feature.stats'),
+            'design' => $allows('card.feature.design'),
+            'colors' => $allows('card.feature.colors'),
+            'gallery' => $allows('card.feature.gallery'),
+            'offerings' => $allows('card.feature.offerings'),
+            'booking' => $allows('card.feature.booking'),
+            'vcard' => $allows('card.feature.vcard'),
+            'stats' => $allows('card.feature.stats'),
         ];
     }
 
-    private function renderForm(array $provider, array $card, array $errors): void
+    private function renderForm(array $provider, array $card, array $errors, ?array $membership = null): void
     {
         $gallery = new Gallery($this->app->db, $this->uploadDir('card-gallery'));
         $this->render('@card/account/edit.twig', [
             'provider' => $provider,
             'card' => $card,
             'errors' => $errors,
-            'features' => $this->features((int) $provider['account_id']),
+            'features' => $this->features((int) $provider['account_id'], (int) $provider['id']),
             'categories' => $this->app->categories->all(),
             'gallery_images' => array_map(fn (array $i) => Gallery::urls($i), $gallery->ofProvider((int) $provider['id'])),
             'gallery_max' => Gallery::MAX_IMAGES,
             'offerings' => (new Offerings($this->app->db))->ofProvider((int) $provider['id']),
             'offerings_max' => Offerings::MAX_OFFERINGS,
+            'membership' => $membership,
         ]);
+    }
+
+    private function organizations(): Organizations
+    {
+        return new Organizations($this->app->db, $this->app);
+    }
+
+    private function isOrgMember(int $providerId): bool
+    {
+        $membership = $this->organizations()->memberOf($providerId);
+
+        return $membership !== null && $membership['role'] === 'employee';
     }
 
     /** The logged-in account's own provider profile; a card needs one to belong to. */

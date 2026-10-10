@@ -1,0 +1,11 @@
+{# Plain text: nothing here is HTML-escaped. Blocks: subject, body. #}
+{% block subject %}{{ trans('card.mail.team_invite.subject', {company: company}) }}{% endblock %}
+{% block body %}
+{{ trans('card.mail.team_invite.intro', {company: company, site: site_name}) }}
+
+{{ link }}
+
+{{ trans('card.mail.team_invite.expires') }}
+
+{{ trans('core.mail.signature') }}
+{% endblock %}

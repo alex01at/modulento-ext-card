@@ -1,8 +1,8 @@
 {
     "id": "card",
     "name": "Card",
-    "version": "0.1.0",
-    "requires": "0.48.1",
+    "version": "0.2.0",
+    "requires": "0.49.0",
     "api": 1,
     "namespace": "Modulento\\Card"
 }

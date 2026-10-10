@@ -1,0 +1,91 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.team.title') }} – {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.team.title') }}</h1>
+<p>{{ trans('card.team.owner_intro') }}</p>
+
+<section>
+    <h2>{{ trans('card.team.section_branding') }}</h2>
+    {% if organization.logo_name %}
+        <p><img src="{{ url('/media/card-logo/' ~ organization.logo_name ~ '.' ~ organization.logo_extension) }}" alt="" width="96" height="96" style="border-radius:.5rem"></p>
+        <form method="post" action="{{ url('/account/team/logo/delete') }}" class="inline-form">
+            {{ csrf_field() }}
+            <button type="submit" class="link-button">{{ trans('card.edit.logo_remove') }}</button>
+        </form>
+    {% endif %}
+    <form method="post" action="{{ url('/account/team/logo') }}" enctype="multipart/form-data" class="stack-form">
+        {{ csrf_field() }}
+        <label for="team-logo">{{ trans('card.edit.logo_upload') }}</label>
+        <input id="team-logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp">
+        <small>{{ trans('card.edit.logo_hint') }}</small>
+        <button type="submit">{{ trans('card.edit.logo_save') }}</button>
+    </form>
+
+    <form method="post" action="{{ url('/account/team/branding') }}" class="stack-form">
+        {{ csrf_field() }}
+        <label for="team-company">{{ trans('card.team.company') }}</label>
+        <input id="team-company" name="company" value="{{ organization.company }}" maxlength="150" required>
+
+        <fieldset>
+            <legend>{{ trans('card.edit.section_design') }}</legend>
+            <small>{{ trans('card.team.design_hint') }}</small>
+            {% for design in designs %}
+                <label class="checkbox">
+                    <input type="radio" name="design" value="{{ design }}" {{ organization.design == design ? 'checked' }}>
+                    <span>{{ trans('card.design.' ~ design) }}</span>
+                </label>
+            {% endfor %}
+        </fieldset>
+
+        <fieldset>
+            <legend>{{ trans('card.team.section_colors') }}</legend>
+            <small>{{ trans('card.team.colors_hint') }}</small>
+            <label class="checkbox">
+                <input type="radio" name="color_preset" value="" {{ organization.color_preset is null ? 'checked' }}>
+                <span>{{ trans('card.team.colors_none') }}</span>
+            </label>
+            {% for key, preset in color_presets %}
+                <label class="checkbox">
+                    <input type="radio" name="color_preset" value="{{ key }}" {{ organization.color_preset == key ? 'checked' }}>
+                    <span>{{ trans('card.team.preset.' ~ key) }}</span>
+                    <span style="display:inline-flex;gap:.3rem;margin-left:.5rem;vertical-align:middle">
+                        <span style="display:inline-block;width:1rem;height:1rem;border-radius:50%;background:{{ preset.header }}"></span>
+                        <span style="display:inline-block;width:1rem;height:1rem;border-radius:50%;background:{{ preset.background }};border:1px solid #e2e4ea"></span>
+                    </span>
+                </label>
+            {% endfor %}
+        </fieldset>
+
+        <button type="submit">{{ trans('card.team.branding_save') }}</button>
+    </form>
+</section>
+
+<section>
+    <h2>{{ trans('card.team.section_members') }}</h2>
+    <ul class="plain-list">
+        {% for member in members %}
+            <li>
+                <strong>{{ member.name }}</strong> <small>{{ member.email }}</small>
+                {% if member.role == 'owner' %}
+                    <span class="badge">{{ trans('card.team.role_owner') }}</span>
+                {% else %}
+                    <form method="post" action="{{ url('/account/team/' ~ member.provider_id ~ '/remove') }}" class="inline-form">
+                        {{ csrf_field() }}
+                        <button type="submit" class="link-button" onclick="return confirm('{{ trans('card.team.confirm_remove') }}')">{{ trans('card.team.remove') }}</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <form method="post" action="{{ url('/account/team/invite') }}" class="stack-form">
+        {{ csrf_field() }}
+        <label for="invite-email">{{ trans('card.team.invite_email') }}</label>
+        <input id="invite-email" name="email" type="email" maxlength="255" required>
+        <small>{{ trans('card.team.invite_hint') }}</small>
+        <button type="submit">{{ trans('card.team.invite_submit') }}</button>
+    </form>
+</section>
+{% endblock %}

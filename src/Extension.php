@@ -34,6 +34,7 @@ final class Extension implements ExtensionContract
         $registrar->subscriptionFeature('card.feature.booking', 'card.subscription.booking');
         $registrar->subscriptionFeature('card.feature.vcard', 'card.subscription.vcard');
         $registrar->subscriptionFeature('card.feature.stats', 'card.subscription.stats');
+        $registrar->subscriptionFeature('card.feature.team', 'card.subscription.team');
 
         $registrar->routes(function (Router $router): void {
             $router->get('/card/{slug}', [CardController::class, 'show'], Router::PUBLIC);
@@ -58,9 +59,18 @@ final class Extension implements ExtensionContract
             $router->post('/account/card/offerings/add', [AccountCardController::class, 'addOffering']);
             $router->post('/account/card/offerings/{id}/delete', [AccountCardController::class, 'deleteOffering']);
             $router->get('/account/card/stats', [AccountCardController::class, 'stats']);
+
+            $router->get('/account/team', [TeamController::class, 'index']);
+            $router->post('/account/team', [TeamController::class, 'found']);
+            $router->post('/account/team/branding', [TeamController::class, 'saveBranding']);
+            $router->post('/account/team/logo', [TeamController::class, 'uploadLogo']);
+            $router->post('/account/team/logo/delete', [TeamController::class, 'deleteLogo']);
+            $router->post('/account/team/invite', [TeamController::class, 'invite']);
+            $router->post('/account/team/{providerId}/remove', [TeamController::class, 'remove']);
         });
 
         $registrar->accountLink('card.nav.my_card', '/account/card');
+        $registrar->accountLink('card.nav.my_team', '/account/team');
 
         // A small teaser on the standard marketplace profile page, linking
         // to the full card - additive, /providers/{slug} itself is

@@ -15,4 +15,17 @@
 {% endif %}
 {% if site_favicon() %}<link rel="icon" href="{{ site_favicon() }}">{% endif %}
 <link rel="stylesheet" href="{{ ext_asset('card', 'card.css') }}">
+{% if card.use_custom_colors %}
+    {# "body[data-design]" beats a design's own "[data-design=...]" default (same
+       specificity class, one extra selector) regardless of source order - see
+       the comment at the top of card.css. #}
+    <style>
+        body[data-design] {
+            --card-bg: {{ card.color_background ?: '#f5f6fa' }};
+            --card-text: {{ card.color_content ?: '#1f2430' }};
+            --card-accent: {{ card.color_header ?: '#1d4dd8' }};
+            --card-accent-2: {{ card.color_footer ?: card.color_header ?: '#1d4dd8' }};
+        }
+    </style>
+{% endif %}
 {% if structured_data_json %}<script type="application/ld+json">{{ structured_data_json|raw }}</script>{% endif %}

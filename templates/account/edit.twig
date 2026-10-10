@@ -5,6 +5,9 @@
 {% block content %}
 <h1>{{ trans('card.edit.title') }}</h1>
 <p class="muted">{{ provider.name }}</p>
+{% if membership and membership.role == 'employee' %}
+    <p class="flash" role="status">{{ trans('card.edit.team_member', {company: membership.organization.company}) }}</p>
+{% endif %}
 <p>{{ trans('card.edit.intro') }} <a href="{{ url('/account/provider') }}">{{ trans('card.edit.provider_link') }}</a></p>
 <p><a href="{{ url('/card/' ~ provider.slug) }}" target="_blank" rel="noopener">{{ trans('card.edit.preview') }}</a></p>
 
@@ -12,6 +15,7 @@
     <p class="flash flash-error" role="alert">{{ error }}</p>
 {% endfor %}
 
+{% if not (membership and membership.role == 'employee') %}
 <section>
     <h2>{{ trans('card.edit.section_logo') }}</h2>
     {% if card.logo_name %}
@@ -29,12 +33,19 @@
         <button type="submit">{{ trans('card.edit.logo_save') }}</button>
     </form>
 </section>
+{% endif %}
 
 <form method="post" action="{{ url('/account/card') }}" class="stack-form wide">
     {{ csrf_field() }}
 
-    <label for="company">{{ trans('card.edit.company') }}</label>
-    <input id="company" name="company" value="{{ card.company }}" maxlength="150">
+    {% if membership and membership.role == 'employee' %}
+        <label for="workplace">{{ trans('card.edit.workplace') }}</label>
+        <input id="workplace" name="workplace" value="{{ membership.workplace }}" maxlength="150" placeholder="{{ trans('card.edit.workplace_placeholder') }}">
+        <small>{{ trans('card.edit.workplace_hint') }}</small>
+    {% else %}
+        <label for="company">{{ trans('card.edit.company') }}</label>
+        <input id="company" name="company" value="{{ card.company }}" maxlength="150">
+    {% endif %}
 
     <label for="category_id">{{ trans('card.edit.category') }}</label>
     <select id="category_id" name="category_id">
@@ -71,31 +82,38 @@
     <label for="opening_hours">{{ trans('card.edit.opening_hours') }}</label>
     <textarea id="opening_hours" name="opening_hours" rows="4" placeholder="{{ trans('card.edit.opening_hours_placeholder') }}">{{ card.opening_hours }}</textarea>
 
-    <fieldset {{ features.design ? '' : 'disabled' }}>
-        <legend>{{ trans('card.edit.section_design') }}{% if not features.design %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>
-        {% for design in ['classic', 'modern', 'professional', 'playful'] %}
-            <label class="checkbox">
-                <input type="radio" name="design" value="{{ design }}" {{ card.design == design ? 'checked' }}>
-                <span>{{ trans('card.design.' ~ design) }}</span>
-            </label>
-        {% endfor %}
-    </fieldset>
+    {% if membership and membership.role == 'employee' %}
+        <fieldset disabled>
+            <legend>{{ trans('card.edit.section_design') }} <span class="badge">{{ trans('card.edit.team_managed') }}</span></legend>
+            <p><small>{{ trans('card.edit.team_managed_hint') }}</small></p>
+        </fieldset>
+    {% else %}
+        <fieldset {{ features.design ? '' : 'disabled' }}>
+            <legend>{{ trans('card.edit.section_design') }}{% if not features.design %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>
+            {% for design in ['classic', 'modern', 'professional', 'playful'] %}
+                <label class="checkbox">
+                    <input type="radio" name="design" value="{{ design }}" {{ card.design == design ? 'checked' }}>
+                    <span>{{ trans('card.design.' ~ design) }}</span>
+                </label>
+            {% endfor %}
+        </fieldset>
 
-    <fieldset {{ features.colors ? '' : 'disabled' }}>
-        <legend>{{ trans('card.edit.section_colors') }}{% if not features.colors %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>
-        <label class="checkbox">
-            <input type="checkbox" name="use_custom_colors" value="1" {{ card.use_custom_colors ? 'checked' }}>
-            <span>{{ trans('card.edit.use_custom_colors') }}</span>
-        </label>
-        <label for="color_background">{{ trans('card.edit.color_background') }}</label>
-        <input id="color_background" name="color_background" type="color" value="{{ card.color_background ?: '#ffffff' }}">
-        <label for="color_header">{{ trans('card.edit.color_header') }}</label>
-        <input id="color_header" name="color_header" type="color" value="{{ card.color_header ?: '#1d4dd8' }}">
-        <label for="color_content">{{ trans('card.edit.color_content') }}</label>
-        <input id="color_content" name="color_content" type="color" value="{{ card.color_content ?: '#1f2430' }}">
-        <label for="color_footer">{{ trans('card.edit.color_footer') }}</label>
-        <input id="color_footer" name="color_footer" type="color" value="{{ card.color_footer ?: '#1f2430' }}">
-    </fieldset>
+        <fieldset {{ features.colors ? '' : 'disabled' }}>
+            <legend>{{ trans('card.edit.section_colors') }}{% if not features.colors %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>
+            <label class="checkbox">
+                <input type="checkbox" name="use_custom_colors" value="1" {{ card.use_custom_colors ? 'checked' }}>
+                <span>{{ trans('card.edit.use_custom_colors') }}</span>
+            </label>
+            <label for="color_background">{{ trans('card.edit.color_background') }}</label>
+            <input id="color_background" name="color_background" type="color" value="{{ card.color_background ?: '#ffffff' }}">
+            <label for="color_header">{{ trans('card.edit.color_header') }}</label>
+            <input id="color_header" name="color_header" type="color" value="{{ card.color_header ?: '#1d4dd8' }}">
+            <label for="color_content">{{ trans('card.edit.color_content') }}</label>
+            <input id="color_content" name="color_content" type="color" value="{{ card.color_content ?: '#1f2430' }}">
+            <label for="color_footer">{{ trans('card.edit.color_footer') }}</label>
+            <input id="color_footer" name="color_footer" type="color" value="{{ card.color_footer ?: '#1f2430' }}">
+        </fieldset>
+    {% endif %}
 
     <fieldset {{ features.booking ? '' : 'disabled' }}>
         <legend>{{ trans('card.edit.section_booking') }}{% if not features.booking %} <span class="badge">{{ trans('card.edit.pro_only') }}</span>{% endif %}</legend>

@@ -1,0 +1,9 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.team.title') }} – {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.team.title') }}</h1>
+<p>{{ trans('card.team.member_intro', {company: organization.company}) }}</p>
+<p><a href="{{ url('/account/card') }}">{{ trans('card.edit.title') }}</a></p>
+{% endblock %}

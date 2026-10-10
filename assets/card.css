@@ -4,7 +4,20 @@
    (see templates/card/designs/*.twig and the _*.twig partials they
    include), most of the visual difference lives here, scoped by
    [data-design]. System font stack throughout - no web font to license or
-   vendor. */
+   vendor.
+
+   Every design declares its own defaults for four custom properties
+   (--card-bg/--card-text/--card-accent/--card-accent-2, corresponding to
+   the editor's background/content/header/footer colour fields) and uses
+   them wherever that design has one clear, swappable accent. A Pro card
+   with "use custom colors" on (or an organisation's chosen colour preset,
+   see the card extension's Organizations class) overrides them with an
+   inline <style> block in _meta.twig, targeting "body[data-design]" so it
+   always wins over these defaults regardless of source order. Each
+   design's own decorative signature (the modern hero's navy/teal gradient,
+   playful's rainbow contact chips) is deliberately left fixed - overriding
+   those too would fight the design's own identity, the same reasoning
+   findmichonline itself applied to its curated palettes. */
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -56,54 +69,69 @@ p { margin: 0 0 .75rem; }
 .card-powered-by a { text-decoration: none; opacity: .6; }
 
 /* --- Classic: plain white card, blue accent (findmichonline's own primary) --- */
-[data-design="classic"] { background: #f5f6fa; color: #1f2430; }
+[data-design="classic"] {
+    --card-bg: #f5f6fa; --card-text: #1f2430; --card-accent: #1d4dd8; --card-accent-2: #1d4dd8;
+    background: var(--card-bg); color: var(--card-text);
+}
 [data-design="classic"] .card-sheet { background: #fff; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); margin-top: 2rem; margin-bottom: 2rem; }
-[data-design="classic"] h1 { color: #1f2430; }
-[data-design="classic"] .card-category { background: #e8edfc; color: #1d4dd8; }
-[data-design="classic"] .card-contact-list a { color: #1f2430; }
-[data-design="classic"] .card-contact-list .icon { color: #1d4dd8; }
-[data-design="classic"] .card-button { background: #1d4dd8; color: #fff; }
-[data-design="classic"] .card-button:hover { background: #163bb2; }
-[data-design="classic"] .card-fab { background: #1d4dd8; color: #fff; }
+[data-design="classic"] h1 { color: var(--card-text); }
+[data-design="classic"] .card-category { background: #eef0f5; color: var(--card-accent); }
+[data-design="classic"] .card-contact-list a { color: var(--card-text); }
+[data-design="classic"] .card-contact-list .icon { color: var(--card-accent); }
+[data-design="classic"] .card-button { background: var(--card-accent); color: #fff; }
+[data-design="classic"] .card-button:hover { filter: brightness(.88); }
+[data-design="classic"] .card-fab { background: var(--card-accent-2); color: #fff; }
 
 /* --- Modern: dark navy hero, teal accent --- */
-[data-design="modern"] { background: #f5f6fa; color: #1f2430; }
+[data-design="modern"] {
+    --card-bg: #f5f6fa; --card-text: #1f2430; --card-accent: #14b8a6; --card-accent-2: #16255c;
+    background: var(--card-bg); color: var(--card-text);
+}
+/* The hero itself keeps its fixed navy/teal gradient - the design's own
+   signature, not something a custom accent should repaint. */
 [data-design="modern"] .card-hero { background: linear-gradient(135deg, #0f1b3d, #16255c); color: #fff; text-align: center; padding: 3rem 1.5rem 2.5rem; position: relative; overflow: hidden; }
 [data-design="modern"] .card-hero::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 60%; height: 140%; background: #14b8a6; opacity: .18; transform: rotate(18deg); }
 [data-design="modern"] .card-hero .card-avatar { margin: 0 auto 1rem; box-shadow: 0 0 0 4px rgba(255,255,255,.2); position: relative; }
 [data-design="modern"] .card-hero h1 { color: #fff; }
 [data-design="modern"] .card-hero .card-headline { color: #cdd6f5; }
-[data-design="modern"] .card-category { background: rgba(20,184,166,.18); color: #5eead4; }
+[data-design="modern"] .card-category { background: rgba(20,184,166,.18); color: var(--card-accent); }
 [data-design="modern"] .card-contact-pills { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
 [data-design="modern"] .card-contact-pills a { background: #eef2ff; color: #16255c; padding: .6rem .8rem; border-radius: .6rem; }
-[data-design="modern"] .card-contact-pills .icon { color: #14b8a6; }
-[data-design="modern"] .card-button { background: #14b8a6; color: #06302b; }
-[data-design="modern"] .card-button:hover { background: #0d9488; }
-[data-design="modern"] .card-fab { background: #16255c; color: #fff; }
+[data-design="modern"] .card-contact-pills .icon { color: var(--card-accent); }
+[data-design="modern"] .card-button { background: var(--card-accent); color: #06302b; }
+[data-design="modern"] .card-button:hover { filter: brightness(.92); }
+[data-design="modern"] .card-fab { background: var(--card-accent-2); color: #fff; }
 
 /* --- Professional: minimalist, square corners, graphite --- */
-[data-design="professional"] { background: #fafafa; color: #1e293b; }
+[data-design="professional"] {
+    --card-bg: #fafafa; --card-text: #1e293b; --card-accent: #1e293b; --card-accent-2: #1e293b;
+    background: var(--card-bg); color: var(--card-text);
+}
 [data-design="professional"] .card-sheet { background: #fff; border-radius: 0; border: 1px solid #e2e8f0; margin-top: 2rem; margin-bottom: 2rem; padding-top: 0; overflow: hidden; }
-[data-design="professional"] .card-accent-bar { height: 4px; background: #1e293b; }
+[data-design="professional"] .card-accent-bar { height: 4px; background: var(--card-accent); }
 [data-design="professional"] .card-head { padding: 1.75rem 1.5rem 0; }
 [data-design="professional"] .card-bio, [data-design="professional"] .card-contact-rows, [data-design="professional"] .card-gallery,
 [data-design="professional"] .card-offerings, [data-design="professional"] .card-hours, [data-design="professional"] .card-actions,
 [data-design="professional"] .card-powered-by { padding-left: 1.5rem; padding-right: 1.5rem; }
-[data-design="professional"] h1 { font-size: 1.3rem; letter-spacing: -.01em; }
+[data-design="professional"] h1 { font-size: 1.3rem; letter-spacing: -.01em; color: var(--card-text); }
 [data-design="professional"] .card-headline { text-transform: uppercase; font-size: .75rem; letter-spacing: .08em; font-weight: 700; color: #64748b; }
 [data-design="professional"] .card-category { background: #f1f5f9; color: #475569; border-radius: .3rem; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; }
-[data-design="professional"] .card-contact-rows a { padding: .6rem 0; border-bottom: 1px solid #f1f5f9; color: #1e293b; }
+[data-design="professional"] .card-contact-rows a { padding: .6rem 0; border-bottom: 1px solid #f1f5f9; color: var(--card-text); }
 [data-design="professional"] .card-contact-rows .icon { color: #94a3b8; width: 1em; height: 1em; }
-[data-design="professional"] .card-button { background: #fff; border: 1px solid #1e293b; color: #1e293b; border-radius: .25rem; }
-[data-design="professional"] .card-button:hover { background: #1e293b; color: #fff; }
-[data-design="professional"] .card-fab { background: #1e293b; color: #fff; border-radius: .5rem; }
+[data-design="professional"] .card-button { background: #fff; border: 1px solid var(--card-accent); color: var(--card-accent); border-radius: .25rem; }
+[data-design="professional"] .card-button:hover { background: var(--card-accent); color: #fff; }
+[data-design="professional"] .card-fab { background: var(--card-accent-2); color: #fff; border-radius: .5rem; }
 
 /* --- Playful: warm cream, pastel chips, dashed borders, rotated CTA --- */
-[data-design="playful"] { background: #fef7f0; color: #42312a; }
+[data-design="playful"] {
+    --card-bg: #fef7f0; --card-text: #42312a; --card-accent: #92400e; --card-accent-2: #f59e0b;
+    background: var(--card-bg); color: var(--card-text);
+}
 [data-design="playful"] .card-sheet { background: #fffaf5; border: 2px dashed #f3d9c4; border-radius: 1.75rem; margin-top: 2rem; margin-bottom: 2rem; }
-[data-design="playful"] .card-avatar { border: 3px dashed #f59e0b; padding: 3px; }
-[data-design="playful"] h1 { color: #92400e; }
-[data-design="playful"] .card-category { background: #fde68a; color: #92400e; }
+[data-design="playful"] .card-avatar { border: 3px dashed var(--card-accent-2); padding: 3px; }
+[data-design="playful"] h1 { color: var(--card-accent); }
+[data-design="playful"] .card-category { background: #fde68a; color: var(--card-accent); }
+/* The six-colour contact-chip rainbow is this design's own signature and stays fixed. */
 [data-design="playful"] .card-contact-chips { grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); }
 [data-design="playful"] .card-contact-chips a { padding: .65rem .9rem; border-radius: 999px; color: #fff; font-weight: 600; font-size: .85rem; }
 [data-design="playful"] .card-contact-chips li:nth-child(6n+1) a { background: #f472b6; }
@@ -113,9 +141,9 @@ p { margin: 0 0 .75rem; }
 [data-design="playful"] .card-contact-chips li:nth-child(6n+5) a { background: #22c55e; }
 [data-design="playful"] .card-contact-chips li:nth-child(6n+6) a { background: #fb7185; }
 [data-design="playful"] .card-qr { border: 2px dashed #f3d9c4; }
-[data-design="playful"] .card-button { background: #92400e; color: #fff9f0; transform: rotate(-1.5deg); }
-[data-design="playful"] .card-button:hover { background: #78350f; }
-[data-design="playful"] .card-fab { background: #f59e0b; color: #42312a; }
+[data-design="playful"] .card-button { background: var(--card-accent); color: #fff9f0; transform: rotate(-1.5deg); }
+[data-design="playful"] .card-button:hover { filter: brightness(.9); }
+[data-design="playful"] .card-fab { background: var(--card-accent-2); color: #42312a; }
 
 @media (max-width: 26rem) {
     .card-sheet { margin-left: .75rem; margin-right: .75rem; padding-left: 1.1rem; padding-right: 1.1rem; }

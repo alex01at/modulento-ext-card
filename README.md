@@ -29,6 +29,36 @@ A Free card still works: the provider's name, headline, description,
 address and the contact methods already on the provider profile (phone,
 e-mail) are always shown and always click-tracked.
 
+## Firma: team accounts
+
+A provider with the `card.feature.team` feature can found an organisation
+under **account → "Mein Team"** (`/account/team`). Its own card becomes the
+organisation's first member; from there its owner invites colleagues by
+e-mail (a fresh account and an already-approved card of their own, with a
+set-password link mailed to them) and sets the organisation's branding -
+company name, logo, a design, and a curated colour preset (a fixed choice,
+not a free colour pick, so a member's card never ends up with illegible
+button text).
+
+Every member's card resolves the organisation's branding live at render
+time (`Organizations::applyBranding()`) - never copied onto the member's
+own `x_card_profile` row, so the owner changing the logo or design reaches
+every already-published member card immediately. A member's own editor
+only keeps their personal fields (contact links, opening hours, an
+optional "where I work" line); company/logo/design/colours are locked
+there and managed centrally. A member also inherits every other Pro
+feature (gallery, offerings, booking, vCard, statistics) from the owner's
+plan, even without a subscription of their own
+(`Organizations::effectiveAllows()`, the single choke-point every
+Pro-only check in this extension goes through) - a Firma seat is full
+access, not just branding.
+
+Billed per seat: a plan the operator marks "billed per seat"
+(**Administration → Subscriptions**, added by this extension's required
+core version) charges `price_cents` per seat per period, with a minimum
+seat count that is always billed even with fewer real members. The seat
+count syncs live to Stripe as members are invited or removed.
+
 ## Installing
 
 In Modulento, open **Administration → Packages**, enter
@@ -60,7 +90,7 @@ automatically to fit.
 
 ## Changing the look
 
-The four designs in `templates/card/designs/` and their shared stylesheet
+The four designs in `templates/designs/` and their shared stylesheet
 (`assets/card.css`) are this extension's own, not a site theme - the card
 is meant to look the same everywhere a visitor opens it, independent of
 which theme the rest of the site uses. A theme overrides one of these
