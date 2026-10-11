@@ -151,9 +151,10 @@ final class Organizations
      * for it - no separate moderation queue), and the membership row.
      * Afterwards the organisation's billed seat count is synced to Stripe.
      *
+     * @param ?string $workplace the new member's own "where I work" line (e.g. a branch address), set right away - used by the CSV import below, null for the single-invite form
      * @return string|null a language key of the problem, null on success
      */
-    public function invite(int $organizationId, string $email, string $locale): ?string
+    public function invite(int $organizationId, string $email, string $locale, ?string $workplace = null): ?string
     {
         $email = strtolower(trim($email));
         if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
@@ -188,6 +189,9 @@ final class Organizations
         $now = Clock::now();
         $this->db->prepare("INSERT INTO x_card_organization_member (organization_id, provider_id, role, joined_at) VALUES (:org, :provider, 'employee', :now)")
             ->execute(['org' => $organizationId, 'provider' => $saved['id'], 'now' => $now]);
+        if ($workplace !== null && $workplace !== '') {
+            $this->setWorkplace((int) $saved['id'], mb_substr($workplace, 0, 150));
+        }
 
         $token = $app->tokens->create($accountId, Tokens::RESET_PASSWORD, 7 * 86400);
         $app->mailer->send($email, '@card/emails/team_invite.txt.twig', [

@@ -138,6 +138,55 @@ final class TeamController extends Controller
         $this->redirect('/account/team');
     }
 
+    /** Several invitations at once, from an uploaded CSV file - see TeamCsvImport. */
+    public function import(array $params): void
+    {
+        if ($this->ownedOrganization() === null) {
+            return;
+        }
+
+        $this->render('@card/account/team_import.twig', ['result' => null]);
+    }
+
+    public function importCsv(array $params): void
+    {
+        $organization = $this->ownedOrganization();
+        if ($organization === null) {
+            return;
+        }
+
+        $upload = $_FILES['file'] ?? [];
+        if (($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_file($upload['tmp_name'] ?? '')) {
+            Session::flash('error', $this->trans('card.team.import.error.upload'));
+            $this->redirect('/account/team/import');
+            return;
+        }
+
+        $result = (new TeamCsvImport())->import($upload['tmp_name'], (int) $organization['id'], $this->app->translator->locale(), $this->organizations());
+        if ($result['fatal'] !== null) {
+            Session::flash('error', $this->trans($result['fatal']));
+            $this->redirect('/account/team/import');
+            return;
+        }
+
+        $this->render('@card/account/team_import.twig', ['result' => $result]);
+    }
+
+    public function importTemplate(array $params): void
+    {
+        if ($this->ownedOrganization() === null) {
+            return;
+        }
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="team-template.csv"');
+
+        $out = fopen('php://output', 'w');
+        fputcsv($out, TeamCsvImport::TEMPLATE_HEADER);
+        fputcsv($out, ['kollege@example.test', 'Niederlassung München']);
+        fclose($out);
+    }
+
     public function remove(array $params): void
     {
         $organization = $this->ownedOrganization();

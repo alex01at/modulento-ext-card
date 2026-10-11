@@ -1,0 +1,40 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.team.import.title') }} – {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.team.import.title') }}</h1>
+<p>{{ trans('card.team.import.intro') }}</p>
+<p><a href="{{ url('/account/team/import/template') }}">{{ trans('card.team.import.template') }}</a></p>
+
+<form method="post" action="{{ url('/account/team/import') }}" enctype="multipart/form-data" class="stack-form">
+    {{ csrf_field() }}
+    <label for="file">{{ trans('card.team.import.file') }}</label>
+    <input id="file" name="file" type="file" accept=".csv,text/csv" required>
+    <button type="submit">{{ trans('card.team.import.submit') }}</button>
+</form>
+
+{% if result %}
+    <section class="card-box">
+        <h2>{{ trans('card.team.import.result') }}</h2>
+        <p>{{ trans('card.team.import.summary', {invited: result.invited}) }}</p>
+
+        {% if result.errors is not empty %}
+            <h3>{{ trans('card.team.import.errors_title') }}</h3>
+            <ul>
+                {% for error in result.errors %}
+                    <li class="flash flash-error">{{ trans('card.team.import.error.row', {row: error.row, email: error.email}) }} {{ trans(error.key) }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
+{% endif %}
+
+<h2>{{ trans('card.team.import.help_title') }}</h2>
+<p>{{ trans('card.team.import.help_columns') }}</p>
+<ul>
+    <li>{{ trans('card.team.import.help_email') }}</li>
+    <li>{{ trans('card.team.import.help_workplace') }}</li>
+</ul>
+<p><a href="{{ url('/account/team') }}">{{ trans('card.team.title') }}</a></p>
+{% endblock %}

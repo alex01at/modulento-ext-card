@@ -67,6 +67,9 @@ final class Extension implements ExtensionContract
             $router->post('/account/team/logo', [TeamController::class, 'uploadLogo']);
             $router->post('/account/team/logo/delete', [TeamController::class, 'deleteLogo']);
             $router->post('/account/team/invite', [TeamController::class, 'invite']);
+            $router->get('/account/team/import', [TeamController::class, 'import']);
+            $router->post('/account/team/import', [TeamController::class, 'importCsv']);
+            $router->get('/account/team/import/template', [TeamController::class, 'importTemplate']);
             $router->post('/account/team/{providerId}/remove', [TeamController::class, 'remove']);
         });
 
