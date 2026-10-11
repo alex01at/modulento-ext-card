@@ -182,6 +182,7 @@ return [
     'card.dashboard.status_unpublished' => 'Not published yet.',
     'card.dashboard.action_edit' => 'Edit card',
     'card.dashboard.action_qr' => 'QR code',
+    'card.dashboard.preview_heading' => 'Preview',
     'card.dashboard.stats_all' => 'View all statistics',
 
     // Stats page

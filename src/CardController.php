@@ -95,6 +95,35 @@ final class CardController extends Controller
     }
 
     /**
+     * The logged-in owner's (or member's) own design, live - even while the
+     * card is not yet approved/public, same idea as ownQrPng() above. Meant
+     * to be embedded in an iframe (the dashboard panel does exactly that),
+     * so it narrows the site-wide "never framed" headers to "framed by this
+     * site only" for this one response - every other directive stays as
+     * public/index.php sets it. Never counted as a real view/click.
+     */
+    public function preview(array $params): void
+    {
+        $app = $this->app;
+        $provider = $app->providers->findByAccount($app->auth->account()['id']);
+        if ($provider === null) {
+            http_response_code(404);
+            $this->render('error.twig', ['status' => 404, 'message_key' => 'core.error.not_found']);
+            return;
+        }
+
+        header('X-Frame-Options: SAMEORIGIN');
+        header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+
+        $cards = new Cards($app->db);
+        $card = $this->brandedCard((int) $provider['id'], $cards->findOrDefault((int) $provider['id']));
+        $locale = $app->translator->locale();
+        $design = in_array($card['design'], Cards::AVAILABLE_DESIGNS, true) ? $card['design'] : 'classic';
+
+        $this->render('@card/designs/' . $design . '.twig', $this->cardView($provider, $card, $locale));
+    }
+
+    /**
      * Every clickable contact method on the card points here instead of a
      * direct tel:/mailto:/url - a plain server-side redirect that counts
      * the click first, no client-side beacon needed.

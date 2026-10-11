@@ -53,6 +53,7 @@ final class Extension implements ExtensionContract
             $router->post('/account/card', [AccountCardController::class, 'save']);
             $router->get('/account/card/qr.png', [CardController::class, 'ownQrPng']);
             $router->get('/account/card/qr.svg', [CardController::class, 'ownQrSvg']);
+            $router->get('/account/card/preview', [CardController::class, 'preview']);
             $router->post('/account/card/logo', [AccountCardController::class, 'uploadLogo']);
             $router->post('/account/card/logo/delete', [AccountCardController::class, 'deleteLogo']);
             $router->post('/account/card/gallery/add', [AccountCardController::class, 'addGalleryImage']);

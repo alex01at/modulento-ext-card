@@ -21,6 +21,10 @@
             <a class="button" href="{{ url('/account/card/qr.png') }}" target="_blank">{{ trans('card.dashboard.action_qr') }}</a>
         </div>
 
+        <h2>{{ trans('card.dashboard.preview_heading') }}</h2>
+        <iframe src="{{ url('/account/card/preview') }}" title="{{ trans('card.dashboard.preview_heading') }}" loading="lazy"
+            style="width: 100%; max-width: 24rem; height: 32rem; border: 1px solid var(--line); border-radius: var(--radius);"></iframe>
+
         <h2>{{ trans('card.stats.title') }}</h2>
         {% if stats %}
             <ul class="dashboard-tiles">

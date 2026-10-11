@@ -182,6 +182,7 @@ return [
     'card.dashboard.status_unpublished' => 'Noch nicht veröffentlicht.',
     'card.dashboard.action_edit' => 'Karte bearbeiten',
     'card.dashboard.action_qr' => 'QR-Code',
+    'card.dashboard.preview_heading' => 'Vorschau',
     'card.dashboard.stats_all' => 'Alle Statistiken ansehen',
 
     // Stats page
