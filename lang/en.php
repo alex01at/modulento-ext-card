@@ -173,6 +173,17 @@ return [
     'card.edit.workplace_placeholder' => 'e.g. Munich branch',
     'card.edit.workplace_hint' => 'Adds to the company address, if you work at a particular location.',
 
+    // Dashboard panel (/account)
+    'card.dashboard.plan_owner' => 'Company (owner)',
+    'card.dashboard.plan_member' => 'Team: {company}',
+    'card.dashboard.plan_pro' => 'Pro',
+    'card.dashboard.plan_free' => 'Free',
+    'card.dashboard.status_published' => 'Published:',
+    'card.dashboard.status_unpublished' => 'Not published yet.',
+    'card.dashboard.action_edit' => 'Edit card',
+    'card.dashboard.action_qr' => 'QR code',
+    'card.dashboard.stats_all' => 'View all statistics',
+
     // Stats page
     'card.stats.title' => 'Statistics',
     'card.stats.views' => 'Total views',

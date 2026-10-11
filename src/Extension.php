@@ -83,5 +83,9 @@ final class Extension implements ExtensionContract
         // never saved a card-specific thing, same convention as every
         // provider section.
         $registrar->providerSection('@card/provider_section.twig', fn (array $provider, App $app): array => ['provider' => $provider]);
+
+        // A status/quick-actions panel on the account's own dashboard (/account) -
+        // nothing shown for an account without a provider profile at all.
+        $registrar->dashboardSection('@card/dashboard_section.twig', fn (array $account, App $app): array => DashboardPanel::data($account, $app));
     }
 }

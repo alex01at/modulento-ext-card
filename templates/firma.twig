@@ -19,12 +19,12 @@
             <li>
                 <strong class="card-title">{{ plan.name }}</strong>
                 <span class="price">{{ trans('card.firma.price_per_seat', {price: money(plan.price_cents, plan.currency)}) }}</span>
-                <p class="muted">{{ trans('card.firma.min_note', {min_seats: plan.min_quantity, min_total: money(plan.min_total_cents, plan.currency)}) }}</p>
+                <p><small>{{ trans('card.firma.min_note', {min_seats: plan.min_quantity, min_total: money(plan.min_total_cents, plan.currency)}) }}</small></p>
             </li>
         {% endfor %}
     </ul>
 {% else %}
-    <p class="muted">{{ trans('card.firma.none') }}</p>
+    <p><small>{{ trans('card.firma.none') }}</small></p>
 {% endif %}
 
 {% if signed_in %}

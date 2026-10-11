@@ -173,6 +173,17 @@ return [
     'card.edit.workplace_placeholder' => 'z. B. Niederlassung München',
     'card.edit.workplace_hint' => 'Ergänzt die Firmenadresse, falls du an einem bestimmten Standort arbeitest.',
 
+    // Dashboard panel (/account)
+    'card.dashboard.plan_owner' => 'Firma (Inhaber:in)',
+    'card.dashboard.plan_member' => 'Team: {company}',
+    'card.dashboard.plan_pro' => 'Pro',
+    'card.dashboard.plan_free' => 'Kostenlos',
+    'card.dashboard.status_published' => 'Veröffentlicht:',
+    'card.dashboard.status_unpublished' => 'Noch nicht veröffentlicht.',
+    'card.dashboard.action_edit' => 'Karte bearbeiten',
+    'card.dashboard.action_qr' => 'QR-Code',
+    'card.dashboard.stats_all' => 'Alle Statistiken ansehen',
+
     // Stats page
     'card.stats.title' => 'Statistiken',
     'card.stats.views' => 'Aufrufe insgesamt',

@@ -1,0 +1,38 @@
+{# The card's status panel on the account dashboard (/account). Receives: published,
+   card_path, plan_key, plan_params, stats (or null when the feature is locked).
+   Nothing at all when the closure returned [] - no provider profile yet. #}
+{% if plan_key is defined %}
+    <section class="dashboard-card">
+        <p><span class="badge">{{ trans(plan_key, plan_params) }}</span></p>
+        <p>
+            {% if published %}
+                {{ trans('card.dashboard.status_published') }}
+                <a href="{{ url(card_path) }}">{{ (site_url ~ url(card_path))|replace({'https://': '', 'http://': ''}) }}</a>
+            {% else %}
+                {{ trans('card.dashboard.status_unpublished') }}
+            {% endif %}
+        </p>
+
+        <div class="button-row">
+            <a class="button" href="{{ url('/account/card') }}">{{ trans('card.dashboard.action_edit') }}</a>
+            {% if published %}
+                <a class="button" href="{{ url(card_path) }}" target="_blank">{{ trans('card.teaser.view') }}</a>
+            {% endif %}
+            <a class="button" href="{{ url('/account/card/qr.png') }}" target="_blank">{{ trans('card.dashboard.action_qr') }}</a>
+        </div>
+
+        <h2>{{ trans('card.stats.title') }}</h2>
+        {% if stats %}
+            <ul class="dashboard-tiles">
+                <li><span>{{ trans('card.stats.views') }}</span><strong>{{ stats.views }}</strong></li>
+                <li><span>{{ trans('card.stats.since_yesterday') }}</span><strong>{{ stats.since_yesterday }}</strong></li>
+                {% if stats.busiest_weekday %}
+                    <li><span>{{ trans('card.stats.busiest_day') }}</span><strong>{{ trans('card.weekday.' ~ stats.busiest_weekday) }}</strong></li>
+                {% endif %}
+            </ul>
+            <p><a href="{{ url('/account/card/stats') }}">{{ trans('card.dashboard.stats_all') }}</a></p>
+        {% else %}
+            <p><small>{{ trans('card.feature.locked') }}</small></p>
+        {% endif %}
+    </section>
+{% endif %}
