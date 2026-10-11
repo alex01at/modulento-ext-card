@@ -1,0 +1,36 @@
+{% extends 'layout/base.twig' %}
+
+{% block title %}{{ trans('card.firma.title') }} – {{ site_name }}{% endblock %}
+{% block meta_description %}{{ trans('card.firma.intro') }}{% endblock %}
+
+{% block content %}
+<h1>{{ trans('card.firma.title') }}</h1>
+<p class="lead">{{ trans('card.firma.intro') }}</p>
+
+<ul>
+    <li>{{ trans('card.firma.benefit_branding') }}</li>
+    <li>{{ trans('card.firma.benefit_pro') }}</li>
+    <li>{{ trans('card.firma.benefit_manage') }}</li>
+</ul>
+
+{% if plans %}
+    <ul class="card-list">
+        {% for plan in plans %}
+            <li>
+                <strong class="card-title">{{ plan.name }}</strong>
+                <span class="price">{{ trans('card.firma.price_per_seat', {price: money(plan.price_cents, plan.currency)}) }}</span>
+                <p class="muted">{{ trans('card.firma.min_note', {min_seats: plan.min_quantity, min_total: money(plan.min_total_cents, plan.currency)}) }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="muted">{{ trans('card.firma.none') }}</p>
+{% endif %}
+
+{% if signed_in %}
+    <p><a class="button" href="{{ url('/account/team') }}">{{ trans('card.firma.cta_start') }}</a></p>
+{% else %}
+    <p><a class="button" href="{{ url('/register') }}">{{ trans('card.firma.cta_register') }}</a></p>
+    <p><a href="{{ url('/login') }}">{{ trans('card.firma.cta_login') }}</a></p>
+{% endif %}
+{% endblock %}

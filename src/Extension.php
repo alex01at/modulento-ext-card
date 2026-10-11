@@ -44,6 +44,7 @@ final class Extension implements ExtensionContract
             $router->get('/card/{slug}/termin', [CardController::class, 'bookingShow'], Router::PUBLIC);
             $router->post('/card/{slug}/termin', [CardController::class, 'bookingSubmit'], Router::PUBLIC);
             $router->get('/go/{slug}/{type}', [CardController::class, 'trackClick'], Router::PUBLIC);
+            $router->get('/firma', [TeamController::class, 'landing'], Router::PUBLIC);
 
             $router->get('/media/card/{id}/{file}', [GalleryMediaController::class, 'gallery'], Router::PUBLIC);
             $router->get('/media/card-logo/{file}', [GalleryMediaController::class, 'logo'], Router::PUBLIC);
@@ -71,6 +72,7 @@ final class Extension implements ExtensionContract
 
         $registrar->accountLink('card.nav.my_card', '/account/card');
         $registrar->accountLink('card.nav.my_team', '/account/team');
+        $registrar->navigation('card.nav.firma', '/firma');
 
         // A small teaser on the standard marketplace profile page, linking
         // to the full card - additive, /providers/{slug} itself is

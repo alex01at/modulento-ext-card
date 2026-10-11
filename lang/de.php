@@ -16,8 +16,22 @@ return [
     // Navigation
     'card.nav.my_card' => 'Meine Visitenkarte',
     'card.nav.my_team' => 'Mein Team',
+    'card.nav.firma' => 'Für Teams',
     'card.error.needs_provider' => 'Lege zuerst ein Anbieterprofil an - die Visitenkarte baut darauf auf.',
     'card.feature.locked' => 'Das ist in deinem aktuellen Plan nicht enthalten.',
+
+    // Firma/Team-Landingpage (öffentlich, /firma)
+    'card.firma.title' => 'Visitenkarten für dein ganzes Team',
+    'card.firma.intro' => 'Ein gemeinsamer Firmenauftritt - Name, Logo, Design und Farbe - für alle, aber jede Visitenkarte bleibt persönlich: eigener Name, eigene Kontaktdaten, eigener QR-Code.',
+    'card.firma.benefit_branding' => 'Firmenname, Logo, Design und eine abgestimmte Farbpalette gelten automatisch für jedes Mitglied - einmal einstellen, überall sofort sichtbar.',
+    'card.firma.benefit_pro' => 'Jedes Mitglied bekommt die volle Pro-Ausstattung (Galerie, Angebotsliste, Terminbuchung, Statistiken, vCard) - unabhängig vom eigenen Abo.',
+    'card.firma.benefit_manage' => 'Mitglieder jederzeit einladen oder entfernen, eine Rechnung für das ganze Team, abgerechnet pro Sitzplatz.',
+    'card.firma.price_per_seat' => '{price} / Sitzplatz / Monat',
+    'card.firma.min_note' => 'mind. {min_seats} Sitzplätze = {min_total} / Monat',
+    'card.firma.none' => 'Für das Team-Angebot ist aktuell kein Plan eingerichtet.',
+    'card.firma.cta_start' => 'Zum Team-Bereich',
+    'card.firma.cta_register' => 'Jetzt registrieren',
+    'card.firma.cta_login' => 'Schon ein Konto? Anmelden',
 
     // Editor
     'card.edit.saved' => 'Gespeichert.',

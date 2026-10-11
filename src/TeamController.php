@@ -17,6 +17,20 @@ use Modulento\Core\Support\Session;
  */
 final class TeamController extends Controller
 {
+    /** Public page explaining the Firma/Team offer, with the real, currently active plan(s) that grant it. */
+    public function landing(array $params): void
+    {
+        $plans = array_values(array_filter(
+            $this->app->subscriptions->activePlans(),
+            fn (array $plan) => in_array('card.feature.team', $plan['features'], true)
+        ));
+
+        $this->render('@card/firma.twig', [
+            'plans' => array_map(fn (array $plan) => $plan + ['min_total_cents' => $plan['price_cents'] * $plan['min_quantity']], $plans),
+            'signed_in' => $this->app->auth->account() !== null,
+        ]);
+    }
+
     public function index(array $params): void
     {
         $provider = $this->provider();

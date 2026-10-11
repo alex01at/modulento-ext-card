@@ -16,8 +16,22 @@ return [
     // Navigation
     'card.nav.my_card' => 'My card',
     'card.nav.my_team' => 'My team',
+    'card.nav.firma' => 'For teams',
     'card.error.needs_provider' => 'Create a provider profile first - the card builds on it.',
     'card.feature.locked' => "That is not included in your current plan.",
+
+    // Firma/Team landing page (public, /firma)
+    'card.firma.title' => 'Cards for your whole team',
+    'card.firma.intro' => 'One shared company look - name, logo, design and colour - for everyone, but every card stays personal: its own name, its own contact details, its own QR code.',
+    'card.firma.benefit_branding' => "The company name, logo, design and a matching colour palette apply to every member automatically - set it once, it shows everywhere at once.",
+    'card.firma.benefit_pro' => "Every member gets the full Pro feature set (gallery, offerings list, booking, statistics, vCard) - regardless of their own subscription.",
+    'card.firma.benefit_manage' => 'Invite or remove members at any time, one invoice for the whole team, billed per seat.',
+    'card.firma.price_per_seat' => '{price} / seat / month',
+    'card.firma.min_note' => 'min. {min_seats} seats = {min_total} / month',
+    'card.firma.none' => 'There is no plan set up for the team offer yet.',
+    'card.firma.cta_start' => 'Go to the team area',
+    'card.firma.cta_register' => 'Register now',
+    'card.firma.cta_login' => 'Already have an account? Log in',
 
     // Editor
     'card.edit.saved' => 'Saved.',
