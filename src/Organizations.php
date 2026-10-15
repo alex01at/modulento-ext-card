@@ -386,7 +386,7 @@ final class Organizations
         }
 
         try {
-            $this->app->subscriptionBilling->setQuantity($ownerAccountId, count($this->members($organizationId)));
+            $this->app->subscriptions->setQuantity($ownerAccountId, count($this->members($organizationId)));
         } catch (\InvalidArgumentException) {
             // No active subscription (e.g. a trial not yet started, or the
             // plan was cancelled) - nothing to sync, the next real one starts fresh.
