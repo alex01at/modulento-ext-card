@@ -1,7 +1,7 @@
 {
     "id": "card",
     "name": "Card",
-    "version": "0.6.2",
+    "version": "0.6.3",
     "requires": "0.55.0",
     "api": 1,
     "description": "Turns an approved provider's profile into a shareable digital business card, with a QR code, vCard and click-tracked contact links.",
